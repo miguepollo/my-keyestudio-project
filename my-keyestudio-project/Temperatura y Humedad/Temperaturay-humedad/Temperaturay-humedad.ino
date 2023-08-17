@@ -29,11 +29,12 @@ void loop() {
     mylcd.setCursor(0, 0);
     mylcd.print("Temperatura = ");
     mylcd.print(dht[2]);
+    delay(500)
     mylcd.setCursor(0, 1);
     mylcd.print("Humedad = ");
     mylcd.print(dht[0]);
     //mylcd.clear();
-    delay(200);
+    delay(100);
   } else {    //Read error
     Serial.println("sensor error");
   }
