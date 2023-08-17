@@ -1,8 +1,8 @@
 //**********************************************************************************
 /*  
- * Filename    : xht11
- * Description : Read the temperature and humidity values of XHT11.
- * Auther      : http//www.keyestudio.coml
+ * Filename    : Temperaturay-humedad.ino
+ * Description : Read the temperature and humidity values of the house sensor.
+ * Auther      : Miguepollo
 */
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
