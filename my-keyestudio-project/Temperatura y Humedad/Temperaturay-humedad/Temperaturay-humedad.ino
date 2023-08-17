@@ -12,7 +12,7 @@ xht11 xht(17);
 
 unsigned char dht[4] = {0, 0, 0, 0};//Only the first 32 bits of data are received, not the parity bits
 void setup() {
-  Serial.begin(9600);//Start the serial port monitor and set baud rate to 9600
+  Serial.begin(115200);//Start the serial port monitor and set baud rate to 9600
   mylcd.init();
   mylcd.backlight();
 }
