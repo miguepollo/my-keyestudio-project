@@ -27,7 +27,6 @@ void setup() {
   Wire.begin();                   // initialize I2C
   mfrc522.PCD_Init();             // initialize MFRC522
   ShowReaderDetails();            // display PCD - MFRC522 read carder
-  Serial.println(F("Scan PICC to see UID, type, and data blocks..."));
   myservo.attach(servoPin);
   pinMode(btnPin, INPUT);
   mylcd.setCursor(0, 0);
