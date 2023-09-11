@@ -34,25 +34,9 @@ void setup() {
 
 void loop() {
   // 
-  if ( ! mfrc522.PICC_IsNewCardPresent() || ! mfrc522.PICC_ReadCardSerial() ) {
-    delay(50);
-    password = "";
-    if(btnFlag == 1)
-    {
-      boolean btnVal = digitalRead(btnPin);
-      if(btnVal == 0)  //Swipe the card to open the door and click button 1 to close the door
-      {
-        Serial.println("close");
-        mylcd.setCursor(0, 0);
-        mylcd.print("close");
-        myservo.write(0);
-        btnFlag = 0;
-      }
-    }
-    return;
-  }
+
   
-  // select one of door cards. UID and SAK are mfrc522.uid.
+
   
   // save UID
   Serial.print(F("Card UID:"));
