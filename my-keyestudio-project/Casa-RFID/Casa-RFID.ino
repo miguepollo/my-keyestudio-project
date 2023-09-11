@@ -48,13 +48,17 @@ void loop() {
     Serial.print(mfrc522.uid.uidByte[i]);
     password = password + String(mfrc522.uid.uidByte[i]);
   }
-  if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct, open the door
+  if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct
   {
     mylcd.setCursor(0, 0);
     mylcd.print("open");
     myservo.write(180);
     password = "";
     btnFlag = 1;
+    if (dht[2] (>=25) )
+    {
+
+    }
   }
   Serial.println(password);
 }
