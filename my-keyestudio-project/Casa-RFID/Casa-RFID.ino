@@ -17,6 +17,11 @@ MFRC522 mfrc522(0x28);
 #define btnPin 16
 boolean btnFlag = 0;
 
+#include "xht11.h"
+xht11 xht(17);
+
+unsigned char dht[4] = {0, 0, 0, 0};//Only the first 32 bits of data are received, not the parity bits
+
 String password = "";
 
 void setup() {
