@@ -27,13 +27,13 @@ void setup() {
   mfrc522.PCD_Init();             // initialize MFRC522
   ShowReaderDetails();            // display PCD - MFRC522 read carder
   myservo.attach(servoPin);
+  myservo.write(0);
   pinMode(btnPin, INPUT);
   mylcd.setCursor(0, 0);
   mylcd.print("Card");
 }
 
 void loop() {  
-  Serial.print(F("Card UID:"));
   for (byte i = 0; i < mfrc522.uid.size; i++) {
     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
     //Serial.print(mfrc522.uid.uidByte[i], HEX);
