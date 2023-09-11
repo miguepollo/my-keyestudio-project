@@ -40,22 +40,13 @@ void loop() {
     Serial.print(mfrc522.uid.uidByte[i]);
     password = password + String(mfrc522.uid.uidByte[i]);
   }
-  if(password == "")  //The card number is correct, open the door
+  if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct, open the door
   {
-    Serial.println("open");
     mylcd.setCursor(0, 0);
-    mylcd.clear();
     mylcd.print("open");
     myservo.write(180);
     password = "";
     btnFlag = 1;
-  }
-  else   //The card number is wrong，LCD displays error
-  {
-    password = "";
-    mylcd.setCursor(0, 0);
-    mylcd.print("OPEN");
-    myservo.write(180);
   }
   Serial.println(password);
 }
