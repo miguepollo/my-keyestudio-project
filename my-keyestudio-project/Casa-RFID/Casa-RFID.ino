@@ -5,6 +5,9 @@
  * Auther      : miguelpollo
 */
 boolean RFIDusadorecientemente = false;
+#include <analogWrite.h>
+#define fanPin1 19
+#define fanPin2 18
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C mylcd(0x27,16,2);
