@@ -32,13 +32,7 @@ void setup() {
   mylcd.print("Card");
 }
 
-void loop() {
-  // 
-
-  
-
-  
-  // save UID
+void loop() {  
   Serial.print(F("Card UID:"));
   for (byte i = 0; i < mfrc522.uid.size; i++) {
     Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
