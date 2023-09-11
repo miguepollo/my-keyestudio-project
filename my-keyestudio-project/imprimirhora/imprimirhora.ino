@@ -12,6 +12,8 @@ long StartTime       = 0;
 long SleepTimer      = 0;
 long Delta           = 30;
 int     wifi_signal, CurrentHour = 0;
+int     wifi_signal_min, CurrentMin = 0;
+int     wifi_signal_sec, CurrentSec = 0;
 const char* ssid = "MIWIFI_2G_y36Y";
 const char* password = "34sf36crhwnp";
 String  Time_str = "--:--:--";
@@ -37,28 +39,8 @@ boolean UpdateLocalTime() {
   CurrentSec  = timeinfo.tm_sec;
   //See http://www.cplusplus.com/reference/ctime/strftime/
   Serial.println(&timeinfo, "%a %b %d %Y   %H:%M:%S");      // Displays: Saturday, June 24 2017 14:05:49
-  if (Units == "M") {
-    sprintf(day_output, "%s, %02u %s %04u", weekday_D [timeinfo.tm_wday], timeinfo.tm_mday, month_M[timeinfo.tm_mon], (timeinfo.tm_year) + 1900);
-    strftime(update_time, sizeof(update_time), "%H:%M", &timeinfo);  // Creates: '@ 14:05:49'   and change from 30 to 8 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    sprintf(time_output, "%s", update_time);
-  }
-  else
-  {
-    strftime(day_output, sizeof(day_output), "%a %b-%d-%Y", &timeinfo); // Creates  'Sat May-31-2019'
-    strftime(update_time, sizeof(update_time), "%r", &timeinfo);        // Creates: '@ 02:05:49pm'
-    sprintf(time_output, "%s", update_time);
-  }
-  Date_str = day_output;
   Time_str = time_output;
   return true;
-}
-
-boolean SetupTime() {
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer, "time.nist.gov"); //(gmtOffset_sec, daylightOffset_sec, ntpServer)
-  setenv("TZ", Timezone, 1);  //setenv()adds the "TZ" variable to the environment with a value TimeZone, only used if set to 1, 0 means no change
-  tzset(); // Set the TZ environment variable
-  delay(100);
-  return UpdateLocalTime();
 }
 
 

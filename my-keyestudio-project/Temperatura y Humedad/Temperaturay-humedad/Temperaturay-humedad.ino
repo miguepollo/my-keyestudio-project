@@ -29,7 +29,7 @@ void loop() {
     mylcd.setCursor(0, 0);
     mylcd.print("Temperatura = ");
     mylcd.print(dht[2]);
-    delay(1700);
+    delay(1000);
     mylcd.setCursor(0, 1);
     mylcd.print("Humedad = ");
     mylcd.print(dht[0]);
