@@ -50,7 +50,10 @@ void setup() {
   pinMode(fanPin1, OUTPUT);
   pinMode(fanPin2, OUTPUT);           // display PCD - MFRC522 read carder
   servoDoor.attach(servoDoorPin);
-  servoWindow.attach(servoWindowPin);
+  servoWindow.attach(servoWindowPin); 
+  strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.show();            // Turn OFF all pixels ASAP
+  strip.setBrightness(255);
   servoDoor.write(0);
   servoWindow.write(0);
   pinMode(btnPin, INPUT);
