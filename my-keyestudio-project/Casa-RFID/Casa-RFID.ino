@@ -80,9 +80,6 @@ void loop() {
   if (RFIDusadorecientemente == false)
   {
     if (xht.receive(dht)){
-      mylcd.clear();
-      mylcd.setCursor(0, 0);
-      mylcd.print(dht[2]);
       if (dht[2] >=28)
       { 
         analogWrite(fanPin2, 150);
