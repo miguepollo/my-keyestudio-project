@@ -61,11 +61,11 @@ void loop() {
       mylcd.clear();
       mylcd.setCursor(0, 0);
       mylcd.print(dht[2]);
-      if (dht[2] >=25)
+      if (dht[2] >=28)
       { 
-        analogWrite(fanPin2, 160);
+        analogWrite(fanPin2, 150);
       }
-      else if ( dht[2] <25 >23 ) {
+      else if ( dht[2] <28 >25 ) {
         analogWrite(fanPin2, 110);  
       }
       else if (dht[2] <23) 
