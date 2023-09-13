@@ -22,6 +22,17 @@ Servo servoWindow;
 MFRC522 mfrc522(0x28);   
 #define btnPin 16
 boolean btnFlag = 0;
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+ #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+#endif
+// Which pin on the Arduino is connected to the NeoPixels?
+// On a Trinket or Gemma we suggest changing this to 1:
+#define LED_PIN    26
+// How many NeoPixels are attached to the Arduino?
+#define LED_COUNT 4
+// Declare our NeoPixel strip object:
+Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 #include "xht11.h"
 xht11 xht(17);
