@@ -15,6 +15,7 @@ LiquidCrystal_I2C mylcd(0x27,16,2);
 #include <ESP32_Servo.h>
 #define servoPin 5
 Servo myservo;
+int servo[2] = {5,13};
 #include <Wire.h>
 #include "MFRC522_I2C.h"
 MFRC522 mfrc522(0x28);   
