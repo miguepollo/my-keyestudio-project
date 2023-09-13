@@ -5,7 +5,6 @@
  * Auther      : miguelpollo
 */
 boolean RFIDusadorecientemente = false;
-#include <analogWrite.h>
 #define fanPin1 19
 #define fanPin2 18
 #include <Wire.h>
