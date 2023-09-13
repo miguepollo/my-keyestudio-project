@@ -80,7 +80,8 @@ void loop() {
   {
     mylcd.setCursor(0, 0);
     mylcd.print("Open");
-    myservo.write(180);
+    servoDoor.write(180);
+    servoWindow.write(180);
     RFIDusadorecientemente = true;
     password = "";
     btnFlag = 1;
@@ -88,12 +89,12 @@ void loop() {
       mylcd.clear();
       mylcd.setCursor(0, 0);
       mylcd.print(dht[2]);
-      if (dht[2] >=25)
+      if (dht[2] >=28)
       { 
-        analogWrite(fanPin2, 200);
+        analogWrite(fanPin2, 190);
       }
-      else if ( dht[2] <25 >23 ) {
-        analogWrite(fanPin2, 160);  
+      else if ( dht[2] <28 >25 ) {
+        analogWrite(fanPin2, 150);  
       }
       else if (dht[2] <23) 
       {
