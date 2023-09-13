@@ -107,6 +107,7 @@ void loop() {
     RFIDusadorecientemente = true;
     password = "";
     btnFlag = 1;
+    colorWipe(strip.Color(  0,   0, 255), 50); 
     if (xht.receive(dht)){
       mylcd.clear();
       mylcd.setCursor(0, 0);
