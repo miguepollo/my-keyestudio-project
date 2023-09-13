@@ -73,7 +73,7 @@ void loop() {
   if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct
   {
     mylcd.setCursor(0, 0);
-    mylcd.print("Open")
+    mylcd.print("Open");
     myservo.write(180);
     RFIDusadorecientemente = true;
     password = "";
@@ -84,10 +84,10 @@ void loop() {
       mylcd.print(dht[2]);
       if (dht[2] >=25)
       { 
-        analogWrite(fanPin2, 180);
+        analogWrite(fanPin2, 200);
       }
       else if ( dht[2] <25 >23 ) {
-        analogWrite(fanPin2, 140);  
+        analogWrite(fanPin2, 160);  
       }
       else if (dht[2] <23) 
       {
