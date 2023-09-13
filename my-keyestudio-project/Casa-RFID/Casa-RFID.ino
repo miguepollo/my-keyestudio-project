@@ -5,6 +5,7 @@
  * Auther      : miguelpollo
 */
 boolean RFIDusadorecientemente = false;
+#define led_y 12  //Define the yellow led pin to 12
 #define fanPin1 19
 #define fanPin2 18
 #include <Wire.h>
