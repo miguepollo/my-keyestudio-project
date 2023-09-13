@@ -18,7 +18,7 @@ int servo[2] = {5,13};
 #include <Wire.h>
 #include "MFRC522_I2C.h"
 MFRC522 mfrc522(0x28);   
-#define servoPin  13
+#define servoPin  servo
 #define btnPin 16
 boolean btnFlag = 0;
 
