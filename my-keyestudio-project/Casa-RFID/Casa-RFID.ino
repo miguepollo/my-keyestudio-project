@@ -31,8 +31,7 @@ void setup() {
   mylcd.init();
   mylcd.backlight();
   Wire.begin();                   // initialize I2C
-  mfrc522.PCD_Init();             // initialize MFRC522
-  ShowReaderDetails(); 
+  mfrc522.PCD_Init();             // initialize MFRC522 
   pinMode(fanPin1, OUTPUT);
   pinMode(fanPin2, OUTPUT);           // display PCD - MFRC522 read carder
   myservo.attach(servoPin);
