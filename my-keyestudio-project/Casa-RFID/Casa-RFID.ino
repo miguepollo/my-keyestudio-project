@@ -32,12 +32,14 @@ void setup() {
   mylcd.backlight();
   Wire.begin();                   // initialize I2C
   mfrc522.PCD_Init();             // initialize MFRC522
-  ShowReaderDetails();            // display PCD - MFRC522 read carder
+  ShowReaderDetails(); 
+  pinMode(fanPin1, OUTPUT);
+  pinMode(fanPin2, OUTPUT);           // display PCD - MFRC522 read carder
   myservo.attach(servoPin);
   myservo.write(0);
   pinMode(btnPin, INPUT);
   mylcd.setCursor(0, 0);
-  mylcd.print("Card");
+  mylcd.print("Card please");
 }
 
 void loop() {  
