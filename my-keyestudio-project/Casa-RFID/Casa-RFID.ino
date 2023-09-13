@@ -16,9 +16,10 @@ LiquidCrystal_I2C mylcd(0x27,16,2);
 Servo servoDoor;
 Servo servoWindow;
 #include <Wire.h>
+#define servoDoorPin 13
+#define servoWindowPin 5
 #include "MFRC522_I2C.h"
 MFRC522 mfrc522(0x28);   
-#define servoPin  servo
 #define btnPin 16
 boolean btnFlag = 0;
 
