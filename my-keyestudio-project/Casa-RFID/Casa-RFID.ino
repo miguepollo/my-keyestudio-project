@@ -13,8 +13,8 @@ boolean RFIDusadorecientemente = false;
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C mylcd(0x27,16,2);
 #include <ESP32_Servo.h>
-Servo myservo;
-int servo[2] = {5,13};
+Servo servoDoor;
+Servo servoWindow;
 #include <Wire.h>
 #include "MFRC522_I2C.h"
 MFRC522 mfrc522(0x28);   
