@@ -48,19 +48,55 @@ void loop() {
     Serial.print(mfrc522.uid.uidByte[i]);
     password = password + String(mfrc522.uid.uidByte[i]);
   }
+
+  if (RFIDusadorecientemente = false)
+  {
+    if (xht.receive(dht)){
+      mylcd.clear();
+      mylcd.setCursor(0, 0);
+      mylcd.print(dht[2]);
+      if (dht[2] >=25)
+      { 
+        analogWrite(fanPin2, 180);
+      }
+      else if ( dht[2] <25 >23 ) {
+        analogWrite(fanPin2, 140);  
+      }
+      else if (dht[2] <23) 
+      {
+        analogWrite(fanPin2, 0);
+      }
+    } 
+  }
+
+
   if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct
   {
     mylcd.setCursor(0, 0);
-    mylcd.print("open");
+    mylcd.print("Open")
     myservo.write(180);
+    RFIDusadorecientemente = true;
     password = "";
     btnFlag = 1;
-    if (dht[2] (>=25) )
-    {
-
+    if (xht.receive(dht)){
+      mylcd.clear();
+      mylcd.setCursor(0, 0);
+      mylcd.print(dht[2]);
+      if (dht[2] >=25)
+      { 
+        analogWrite(fanPin2, 180);
+      }
+      else if ( dht[2] <25 >23 ) {
+        analogWrite(fanPin2, 140);  
+      }
+      else if (dht[2] <23) 
+      {
+        analogWrite(fanPin2, 0);
+      }
     }
   }
   Serial.println(password);
+  
 }
 
 void ShowReaderDetails() {
