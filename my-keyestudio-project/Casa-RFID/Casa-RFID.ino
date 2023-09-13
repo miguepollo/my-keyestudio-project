@@ -107,7 +107,7 @@ void loop() {
     RFIDusadorecientemente = true;
     password = "";
     btnFlag = 1;
-    colorWipe(strip.Color(  0,   0, 255), 50); 
+    colorWipe(strip.Color(  220,   0, 255), 50); 
     if (xht.receive(dht)){
       mylcd.clear();
       mylcd.setCursor(0, 0);
@@ -119,7 +119,7 @@ void loop() {
       else if ( dht[2] <28 >25 ) {
         analogWrite(fanPin2, 150);  
       }
-      else if (dht[2] <23) 
+      else if (dht[2] <25) 
       {
         analogWrite(fanPin2, 0);
       }
