@@ -95,6 +95,7 @@ void loop() {
         analogWrite(fanPin2, 0);
       }
     }
+    digitalWrite(led_y, HIGH);
   }
   Serial.println(password);
   
