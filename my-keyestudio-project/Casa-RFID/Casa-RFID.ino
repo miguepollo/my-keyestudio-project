@@ -49,7 +49,7 @@ void loop() {
     password = password + String(mfrc522.uid.uidByte[i]);
   }
 
-  if (RFIDusadorecientemente = false)
+  if (RFIDusadorecientemente == false)
   {
     if (xht.receive(dht)){
       mylcd.clear();
@@ -57,10 +57,10 @@ void loop() {
       mylcd.print(dht[2]);
       if (dht[2] >=25)
       { 
-        analogWrite(fanPin2, 180);
+        analogWrite(fanPin2, 160);
       }
       else if ( dht[2] <25 >23 ) {
-        analogWrite(fanPin2, 140);  
+        analogWrite(fanPin2, 110);  
       }
       else if (dht[2] <23) 
       {
