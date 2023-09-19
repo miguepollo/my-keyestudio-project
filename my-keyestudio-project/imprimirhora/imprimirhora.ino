@@ -106,17 +106,6 @@ WiFi.begin(ssid, password);
     else                             
       WakeUp = (CurrentHour >= WakeupHour && CurrentHour <= SleepHour);
 }
-void BeginSleep() {
-  epd_poweroff_all();
-  UpdateLocalTime();
-  SleepTimer = (SleepDuration * 60 - ((CurrentMin % SleepDuration) * 60 + CurrentSec)) + Delta; //Some ESP32 have a RTC that is too fast to maintain accurate time, so add an offset
-  esp_sleep_enable_timer_wakeup(SleepTimer * 1000000LL); // in Secs, 1000000LL converts to Secs as unit = 1uSec
-  Serial.println("Awake for : " + String((millis() - StartTime) / 1000.0, 3) + "-secs");
-  Serial.println("Entering " + String(SleepTimer) + " (secs) of sleep time");
-  Serial.println("Starting deep-sleep period...");
-  esp_deep_sleep_start();  // Sleep for e.g. 30 minutes
-}
-
 void loop() {
 SetupTime();
 Serial.println(Time_str);
