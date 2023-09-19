@@ -1,9 +1,3 @@
-//**********************************************************************************
-/*  
- * Filename    : Temperaturay-humedad.ino
- * Description : Read the temperature and humidity values of the house sensor.
- * Auther      : Miguepollo
-*/
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C mylcd(0x27,16,2);
