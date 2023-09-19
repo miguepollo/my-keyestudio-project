@@ -1,9 +1,3 @@
-//**********************************************************************************
-/*  
- * Filename    : Temperaturay-humedad.ino
- * Description : Read the temperature and humidity values of the house sensor.
- * Auther      : Miguepollo
-*/
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C mylcd(0x27,16,2);
@@ -29,16 +23,15 @@ void loop() {
     mylcd.setCursor(0, 0);
     mylcd.print("Temperatura = ");
     mylcd.print(dht[2]);
-    delay(1000);
+    delay(2000);
     mylcd.setCursor(0, 1);
     mylcd.print("Humedad = ");
     mylcd.print(dht[0]);
     delay(4000);
     mylcd.clear();
-    delay(100);
+    delay(0);
   } else {    //Read error
     Serial.println("sensor error");
   }
-  delay(90);  //It takes 90ms to wait for the device to read
+  delay(50);  //It takes 50ms to wait for the device to read
 }
-//**********************************************************************************
