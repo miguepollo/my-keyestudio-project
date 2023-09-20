@@ -105,10 +105,15 @@ WiFi.begin(ssid, password);
       WakeUp = (CurrentHour >= WakeupHour || CurrentHour <= SleepHour); 
     else                             
       WakeUp = (CurrentHour >= WakeupHour && CurrentHour <= SleepHour);
+  }    
 }
 void loop() {
 SetupTime();
 Serial.println(Time_str);
+mylcd.setCursor(0, 0);
+mylcd.print(Time_str);
+delay(5000);
+mylcd.clear();
 }
 
 
