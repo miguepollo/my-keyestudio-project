@@ -1,4 +1,3 @@
-//**********************************************************************************
 /*  
  * Filename    : RFID
  * Description : RFID 
@@ -96,6 +95,7 @@ void loop() {
       {
         analogWrite(fanPin2, 0);
       }
+    Bocina();
     delay(20000);
     Ventiladorsinrfid = true;
     } 
@@ -135,5 +135,14 @@ void loop() {
   
 }
 
+void Bocina()
+{
+  tone(buzzer_pin,294,250,0);
+  delay(500);
+  tone(buzzer_pin,494,250,0);
+  delay(500);
+  tone(buzzer_pin,694,250,0);
+  delay(500);
+  tone(buzzer_pin,0,0,0);
+}
 
-//**********************************************************************************
