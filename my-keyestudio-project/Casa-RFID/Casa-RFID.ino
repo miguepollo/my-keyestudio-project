@@ -3,6 +3,9 @@
  * Description : RFID 
  * Auther      : miguelpollo
 */
+#include <WiFi.h>
+#include <ESPmDNS.h>
+#include <WiFiClient.h>
 #include <ESP32Tone.h>
 #define buzzer_pin 25
 boolean RFIDusadorecientemente = false;
