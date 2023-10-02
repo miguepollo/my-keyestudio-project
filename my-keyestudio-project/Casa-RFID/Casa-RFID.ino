@@ -4,6 +4,8 @@
  * Description : RFID 
  * Auther      : miguelpollo
 */
+#include <ESP32Tone.h>
+#define buzzer_pin 25
 boolean RFIDusadorecientemente = false;
 boolean Ventiladorsinrfid = false;
 #include <ESP32_Servo.h>
