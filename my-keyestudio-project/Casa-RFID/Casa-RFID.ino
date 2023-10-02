@@ -5,6 +5,7 @@
  * Auther      : miguelpollo
 */
 boolean RFIDusadorecientemente = false;
+boolean Ventiladorsinrfid = false;
 #include <ESP32_Servo.h>
 #define led_y 12  //Define the yellow led pin to 12
 #define fanPin1 19
@@ -93,11 +94,13 @@ void loop() {
       {
         analogWrite(fanPin2, 0);
       }
+    delay(20000);
+    Ventiladorsinrfid = true;
     } 
   }
 
 
-  if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial())  //The card number is correct
+  if(mfrc522.PICC_IsNewCardPresent() || mfrc522.PICC_ReadCardSerial() || Ventiladorsinrfid == true )  //The card number is correct
   {
     mylcd.setCursor(0, 0);
     mylcd.print("Open");
