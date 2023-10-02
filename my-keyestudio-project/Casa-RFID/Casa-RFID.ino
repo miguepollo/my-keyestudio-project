@@ -54,7 +54,7 @@ void setup() {
   servoWindow.attach(servoWindowPin); 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
-  strip.setBrightness(255);
+  strip.setBrightness(100);
   servoDoor.write(0);
   servoWindow.write(0);
   pinMode(btnPin, INPUT);
@@ -118,7 +118,8 @@ void loop() {
       { 
         analogWrite(fanPin2, 190);
       }
-      else if ( dht[2] <28 >25 ) {
+      else if ( dht[2] <28 >25 ) 
+      {
         analogWrite(fanPin2, 150);  
       }
       else if (dht[2] <25) 
@@ -128,7 +129,7 @@ void loop() {
     }
     digitalWrite(led_y, HIGH);
   }
-  Serial.println(password);
+
   
 }
 
