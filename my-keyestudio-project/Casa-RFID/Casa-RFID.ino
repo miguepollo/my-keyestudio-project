@@ -7,7 +7,6 @@
 #include <ESPmDNS.h>
 #include <WiFiClient.h>
 #include <ESP32Tone.h>
-#include <ESPmDNS.h>
 #define buzzer_pin 25
 boolean RFIDusadorecientemente = false;
 boolean Ventiladorsinrfid = false;
