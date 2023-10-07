@@ -7,6 +7,7 @@
 #include <ESPmDNS.h>
 #include <WiFiClient.h>
 #include <ESP32Tone.h>
+#include <ESPmDNS.h>
 #define buzzer_pin 25
 boolean RFIDusadorecientemente = false;
 boolean Ventiladorsinrfid = false;
@@ -18,6 +19,12 @@ boolean Ventiladorsinrfid = false;
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C mylcd(0x27,16,2);
 #include <ESP32_Servo.h>
+
+String item = "0";
+const char* ssid = "MIWIFI_2G_y36Y";
+const char* password = "34sf36crhwnp";
+WiFiServer server(80);
+
 Servo servoDoor;
 Servo servoWindow;
 #include <Wire.h>
