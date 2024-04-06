@@ -14,8 +14,8 @@ long Delta           = 30;
 int     wifi_signal, CurrentHour = 0;
 int     wifi_signal_min, CurrentMin = 0;
 int     wifi_signal_sec, CurrentSec = 0;
-const char* ssid = "Your-ssid";
-const char* password = "Password";
+const char* ssid = "MIWIFI_2G_y36Y";
+const char* password = "34sf36crhwnp";
 String  Time_str = "--:--:--";
 const char* Timezone    = "CET"; // Choose your time zone from: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv 
                                                            // See below for examples
@@ -26,6 +26,28 @@ const char* ntpServer   = "0.es.pool.ntp.org"; // Or, choose a time server close
                                                            // See: https://www.ntppool.org/en/                                                           
 int gmtOffset_sec     = +1;    // UK normal time is GMT, so GMT Offset is 0, for US (-5Hrs) is typically -18000, AU is typically (+8hrs) 28800
 int daylightOffset_sec = 3600; // In the UK DST is +1hr or 3600-secs, other countries may use 2hrs 7200 or 30-mins 1800 or 5.5hrs 19800 Ahead of GMT use + offset behind - offset
+
+uint8_t StartWiFi() {
+  Serial.println("\r\nConnecting to: " + String(ssid));
+  IPAddress dns(8, 8, 8, 8); // Use Google DNS
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA); // switch off AP
+  WiFi.setAutoConnect(true);
+  WiFi.setAutoReconnect(true);
+  WiFi.begin(ssid, password);
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.printf("STA: Failed!\n");
+    WiFi.disconnect(false);
+    delay(500);
+    WiFi.begin(ssid, password);
+  }
+  if (WiFi.status() == WL_CONNECTED) {
+    wifi_signal = WiFi.RSSI(); // Get Wifi Signal strength now, because the WiFi will be turned off to save power!
+    Serial.println("conectado a: " + WiFi.localIP().toString());
+  }
+  else Serial.println("*** FALLO DE LA WIFI ***");
+  return WiFi.status();
+}
 
 boolean UpdateLocalTime() {
   struct tm timeinfo;
@@ -85,7 +107,6 @@ WiFi.begin(ssid, password);
       WakeUp = (CurrentHour >= WakeupHour && CurrentHour <= SleepHour);
 }
 void BeginSleep() {
-  epd_poweroff_all();
   UpdateLocalTime();
   SleepTimer = (SleepDuration * 60 - ((CurrentMin % SleepDuration) * 60 + CurrentSec)) + Delta; //Some ESP32 have a RTC that is too fast to maintain accurate time, so add an offset
   esp_sleep_enable_timer_wakeup(SleepTimer * 1000000LL); // in Secs, 1000000LL converts to Secs as unit = 1uSec
