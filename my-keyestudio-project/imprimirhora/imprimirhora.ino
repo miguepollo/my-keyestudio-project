@@ -14,8 +14,8 @@ long Delta           = 30;
 int     wifi_signal, CurrentHour = 0;
 int     wifi_signal_min, CurrentMin = 0;
 int     wifi_signal_sec, CurrentSec = 0;
-const char* ssid = "MIWIFI_2G_y36Y";
-const char* password = "34sf36crhwnp";
+const char* ssid = "Your-ssid";
+const char* password = "Password";
 String  Time_str = "--:--:--";
 const char* Timezone    = "CET"; // Choose your time zone from: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv 
                                                            // See below for examples
