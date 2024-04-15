@@ -16,13 +16,14 @@ LiquidCrystal_I2C mylcd(0x27,16,2);
 
 
 
-
+/*
 bool getBitcoinData(WiFiClient & client, const String & RequestType) {
   client.stop(); // close connection before sending a new request
   HTTPClient http;
-  String uri = "https://mempool.space/api/v1/prices";
+  String uri = "mempool.space/api/v1/prices";
+  String url = "mempool.space";
 
-  http.begin(client, uri, 443, uri, true); //http.begin(uri,test_root_ca); //HTTPS example connection
+  http.begin(client, uri, 443, url, true); //http.begin(uri,test_root_ca); //HTTPS example connection
   int httpCode = http.GET();
   if (httpCode == HTTP_CODE_OK) {
     String MempoolRawPrice = http.getString();
@@ -41,7 +42,7 @@ bool getBitcoinData(WiFiClient & client, const String & RequestType) {
   http.end();
   return true;
 }
-
+*/
 
 
 
@@ -154,7 +155,7 @@ void loop() {
   boolean gasVal = digitalRead(gasPin);  //Reads the value detected by the gas sensor
   boolean btn1_val = digitalRead(btn1); //Read the value of the button
   WiFiClient client;
-  getBitcoinData(client, requestType);
+//  getBitcoinData(client, requestType);
 
 //  Serial.println(" Button: " + String(btn1_val));
 
