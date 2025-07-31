@@ -7,12 +7,12 @@ long Delta           = 30;
 int     wifi_signal, CurrentHour = 0;
 int     wifi_signal_min, CurrentMin = 0;
 int     wifi_signal_sec, CurrentSec = 0;
-const char* ssid = "MIWIFI_2G_y36Y";
-const char* password = "34sf36crhwnp";
+const char* ssid = "Your ºSSIDº"; // Replace with your WiFi SSID
+const char* password = "Your ºPasswordº"; // Replace with your WiFi Password
 
 const char* Timezone    = "CET-1CEST,M3.5.0,M10.5.0/3"; // Choose your time zone from: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv 
                                                            // See below for examples
-const char* ntpServer   = "0.es.pool.ntp.org"; // Or, choose a time server close to you, but in most cases it's best to use pool.ntp.org or time.google.com to find an NTP server
+const char* ntpServer   = "pool.ntp.org"; // Or, choose a time server close to you, but in most cases it's best to use pool.ntp.org or time.google.com to find an NTP server
                                                            // then the NTP system decides e.g. 0.pool.ntp.org, 1.pool.ntp.org as the NTP syem tries to find  the closest available servers
                                                            // EU "0.europe.pool.ntp.org"
                                                            // US "0.north-america.pool.ntp.org"
