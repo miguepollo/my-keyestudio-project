@@ -7,50 +7,78 @@
 #include <ArduinoJson.h>        // https://github.com/bblanchon/ArduinoJson
 #include <HTTPClient.h>
 #include <ESP32Tone.h>
+#include <string.h>
+#include <WebServer.h>
+#include <EEPROM.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncTCP.h>
+
 String  Time_str = "--:--:--";
 Servo myservo;  // create servo object to control a servo
 // 16 servo objects can be created on the ESP32
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C mylcd(0x27,16,2);
 
+// Configuración del servidor web asíncrono
+AsyncWebServer server(80);
+const int EEPROM_SIZE = 512;
+const int API_KEY_ADDRESS = 0;
+String storedApiKey = "";
 
+// Declaración de funciones
+void desplazarTexto(const char* texto, int fila);
+void mostrarMensajeMotivacional();
+void efectoBienvenida();
+void efectoAlarma();
+void efectoFiesta();
+void breathingEffect();
+void rainbowEffect();
+bool getWeatherData();
 
+void setupServer() {
+  // Leer API key guardada
+  EEPROM.begin(EEPROM_SIZE);
+  char tempKey[33];
+  EEPROM.get(API_KEY_ADDRESS, tempKey);
+  storedApiKey = String(tempKey);
+  
+  // Configurar rutas del servidor
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    String html = "<html><head>";
+    html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
+    html += "<style>";
+    html += "body { font-family: Arial; margin: 20px; }";
+    html += "input[type=text] { width: 100%; padding: 12px; margin: 8px 0; }";
+    html += "input[type=submit] { background-color: #4CAF50; color: white; padding: 12px 20px; border: none; cursor: pointer; }";
+    html += "</style></head><body>";
+    html += "<h1>Configuración OpenWeatherMap</h1>";
+    html += "<form action='/save' method='post'>";
+    html += "API Key: <input type='text' name='apikey' value='" + storedApiKey + "'><br><br>";
+    html += "<input type='submit' value='Guardar'>";
+    html += "</form>";
+    html += "</body></html>";
+    request->send(200, "text/html", html);
+  });
 
-/*
-bool getBitcoinData(WiFiClient & client, const String & RequestType) {
-  client.stop(); // close connection before sending a new request
-  HTTPClient http;
-  String uri = "mempool.space/api/v1/prices";
-  String url = "mempool.space";
+  server.on("/save", HTTP_POST, [](AsyncWebServerRequest *request){
+    if (request->hasParam("apikey", true)) {
+      String newApiKey = request->getParam("apikey", true)->value();
+      // Guardar en EEPROM
+      char tempKey[33];
+      newApiKey.toCharArray(tempKey, 33);
+      EEPROM.put(API_KEY_ADDRESS, tempKey);
+      EEPROM.commit();
+      storedApiKey = newApiKey;
+      request->send(200, "text/html", "API Key guardada. Reiniciando...");
+      delay(1000);
+      ESP.restart();
+    } else {
+      request->send(400, "text/html", "Error: No se proporcionó API Key");
+    }
+  });
 
-  http.begin(client, uri, 443, url, true); //http.begin(uri,test_root_ca); //HTTPS example connection
-  int httpCode = http.GET();
-  if (httpCode == HTTP_CODE_OK) {
-    String MempoolRawPrice = http.getString();
-    Serial.println(MempoolRawPrice);
-    client.stop();
-    http.end();
-    return true;
-  }
-  else
-  {
-    Serial.printf("connection failed, error: %s", http.errorToString(httpCode).c_str());
-    client.stop();
-    http.end();
-    return false;
-  }
-  http.end();
-  return true;
+  server.begin();
 }
-*/
-
-
-
-
-
-
-
-
 
 uint8_t StartWiFi() {
   Serial.println("\r\nConnecting to: " + String(ssid));
@@ -112,17 +140,17 @@ boolean SetupTime() {
 
 void setup(){
   Serial.begin(115200);
-  pinMode(pyroelectric, INPUT); //Set pin to input mode
-  pinMode(led_y, OUTPUT);  //Set pin to output mode
-  pinMode(gasPin, INPUT); //Set pin to input mode
+  pinMode(pyroelectric, INPUT);
+  pinMode(led_y, OUTPUT);
+  pinMode(gasPin, INPUT);
   mylcd.init();
   mylcd.backlight();
   mylcd.clear();
   WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-    }
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
@@ -134,12 +162,14 @@ void setup(){
     else                             
       WakeUp = (CurrentHour >= WakeupHour && CurrentHour <= SleepHour); 
   }
-    myservo.attach(servoPin);   // attaches the servo on pin 18 to the servo object
-    strip.begin(); // Initialize NeoPixel strip object (REQUIRED) 
-    strip.show();  // Initialize all pixels to 'off'
-    strip.setBrightness(50); // Set brightness to about 20% (max = 255)
-    pinMode(btn1, INPUT); //Set the button pin to input mode
-
+  myservo.attach(servoPin);
+  strip.begin();
+  strip.show();
+  strip.setBrightness(50);
+  pinMode(btn1, INPUT);
+  
+  // Iniciar servidor web
+  setupServer();
 }
 
 void StopWiFi() {
@@ -148,132 +178,233 @@ void StopWiFi() {
   Serial.println("WiFi Off");
 }
 
+// Función para desplazar texto en la pantalla LCD
+void desplazarTexto(const char* texto, int fila) {
+  int longitud = strlen(texto);
+  if (longitud <= 16) {
+    // Si el texto es corto, simplemente lo mostramos
+    mylcd.setCursor(0, fila);
+    mylcd.print(texto);
+  } else {
+    // Si el texto es largo, lo hacemos desplazar
+    for (int pos = 0; pos < longitud; pos++) {
+      mylcd.setCursor(0, fila);
+      for (int i = 0; i < 16; i++) {
+        int indice = (pos + i) % longitud;
+        mylcd.print(texto[indice]);
+      }
+      delay(300); // Velocidad del desplazamiento
+    }
+  }
+}
+
+// Función para obtener el clima
+bool getWeatherData() {
+  if (storedApiKey.length() == 0) {
+    Serial.println("API Key no configurada");
+    mylcd.setCursor(0,1);
+    mylcd.print("Config API Key");
+    return false;
+  }
+
+  HTTPClient http;
+  String url = "http://api.openweathermap.org/data/2.5/weather?q=Sanchinarro&appid=" + storedApiKey + "&units=metric&lang=es";
+  
+  Serial.println("Conectando a OpenWeatherMap...");
+  Serial.println("URL: " + url);
+  http.begin(url);
+  int httpCode = http.GET();
+  
+  if (httpCode == HTTP_CODE_OK) {
+    String payload = http.getString();
+    Serial.println("Respuesta recibida: " + payload);
+    
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, payload);
+    
+    if (error) {
+      Serial.print("Error deserializando JSON: ");
+      Serial.println(error.c_str());
+      mylcd.setCursor(0,1);
+      mylcd.print("Error JSON");
+      return false;
+    }
+    
+    float temperature = doc["main"]["temp"];
+    String weather = doc["weather"][0]["description"];
+    float humidity = doc["main"]["humidity"];
+    
+    // Limpiar la línea antes de escribir
+    mylcd.setCursor(0,1);
+    mylcd.print("                "); // 16 espacios para limpiar
+    
+    // Crear mensaje más compacto
+    String weatherMessage = String(temperature, 1) + "C " + weather.substring(0, 6);
+    if (weatherMessage.length() > 16) {
+      weatherMessage = weatherMessage.substring(0, 16);
+    }
+    
+    Serial.println("Mensaje del tiempo: " + weatherMessage);
+    
+    // Mostrar en la segunda línea
+    mylcd.setCursor(0,1);
+    mylcd.print(weatherMessage);
+    return true;
+  } else {
+    Serial.println("Error en la conexión HTTP: " + String(httpCode));
+    mylcd.setCursor(0,1);
+    mylcd.print("Error " + String(httpCode));
+  }
+  http.end();
+  return false;
+}
+
+// Función para mostrar mensajes motivacionales
+void mostrarMensajeMotivacional() {
+  const char* mensajes[] = {
+    "¡Buen dia! - ¡Que tengas un excelente dia!",
+    "¡Hora de brillar! - ¡Vamos a por ello!",
+    "¡Hoy sera genial! - ¡Aprovecha el dia!",
+    "¡Buenos dias! - ¡Que tengas un dia maravilloso!",
+    "¡Despierta y brilla! - ¡El dia te espera!"
+  };
+  static int ultimoMensaje = -1;
+  int mensajeAleatorio;
+  
+  do {
+    mensajeAleatorio = random(0, 5);
+  } while (mensajeAleatorio == ultimoMensaje);
+  
+  ultimoMensaje = mensajeAleatorio;
+  desplazarTexto(mensajes[mensajeAleatorio], 1);
+}
+
+// Efecto de LED tipo "alarma"
+void efectoAlarma() {
+  for(int i = 0; i < 3; i++) {
+    strip.fill(strip.Color(255, 0, 0));
+    strip.show();
+    delay(200);
+    strip.clear();
+    strip.show();
+    delay(200);
+  }
+}
+
+// Efecto de LED tipo "fiesta"
+void efectoFiesta() {
+  for(int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, strip.Color(
+      random(0, 255),
+      random(0, 255),
+      random(0, 255)
+    ));
+  }
+  strip.show();
+  delay(100);
+}
+
+// Función para controlar el servo con un efecto de "bienvenida"
+void efectoBienvenida() {
+  myservo.write(0);
+  delay(500);
+  myservo.write(90);
+  delay(500);
+  myservo.write(180);
+  delay(500);
+  myservo.write(90);
+}
+
+// Efecto de LED tipo "respiración"
+void breathingEffect() {
+  for(int i = 0; i < 255; i++) {
+    strip.setBrightness(50); // Brillo fijo al 20%
+    strip.fill(strip.Color(0, 0, 255)); // Color azul
+    strip.show();
+    delay(5);
+  }
+  for(int i = 255; i >= 0; i--) {
+    strip.setBrightness(50); // Brillo fijo al 20%
+    strip.fill(strip.Color(0, 0, 255)); // Color azul
+    strip.show();
+    delay(5);
+  }
+}
+
+// Efecto de LED tipo "arcoíris"
+void rainbowEffect() {
+  for(long firstPixelHue = 0; firstPixelHue < 65536; firstPixelHue += 256) {
+    strip.setBrightness(50); // Brillo fijo al 20%
+    for(int i = 0; i < strip.numPixels(); i++) {
+      int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+    }
+    strip.show();
+    delay(20);
+  }
+}
 
 void loop() {
   boolean  pyroelectric_val = digitalRead(pyroelectric);
   SetupTime();
-  boolean gasVal = digitalRead(gasPin);  //Reads the value detected by the gas sensor
-  boolean btn1_val = digitalRead(btn1); //Read the value of the button
-  WiFiClient client;
-//  getBitcoinData(client, requestType);
-
-//  Serial.println(" Button: " + String(btn1_val));
+  boolean gasVal = digitalRead(gasPin);
+  boolean btn1_val = digitalRead(btn1);
 
   if(CurrentHour >= 7 && CurrentHour <= 23){
-    delay(500);
-    mylcd.setCursor(0,0);
-    mylcd.clear(); 
-    mylcd.print("Hora: ");
+    delay(1000);
+    mylcd.setCursor(6,0);
+    if(CurrentHour < 10) {
+      mylcd.print("0");
+    }
     mylcd.print(CurrentHour);
     mylcd.print(":");
+    if(CurrentMin < 10) {
+      mylcd.print("0");
+    }
     mylcd.print(CurrentMin);
     mylcd.print(":");
+    if(CurrentSec < 10) {
+      mylcd.print("0");
+    }
     mylcd.print(CurrentSec);
-    mylcd.setCursor(0,1);
-    if(gasVal == 0)  //If the hazardous gas is detected，LCD displays dangerous，the buzzer makes an alarm
-    {
+    mylcd.print("   ");
+
+    // Detección de gas mejorada
+    if(gasVal == 0) {
+      efectoAlarma();
       tone(buzzer_pin,294,250,0);
       delay(500);
       noTone(buzzer_pin,0);
+      mylcd.setCursor(0,1);
+      mylcd.print("¡ALERTA GAS!");
+    } else {
+      // Actualizar el clima cada 5 minutos
+      static unsigned long lastWeatherUpdate = 0;
+      if (millis() - lastWeatherUpdate > 300000) { // 5 minutos
+        getWeatherData();
+        lastWeatherUpdate = millis();
+      }
     }
 
-    if (gasVal == 1 && CurrentHour >= 9 && CurrentHour <= 23 && Isused == 1)
-    {
-      noTone(buzzer_pin,0);
-    }
-    {
-
-    }
-    if (CurrentHour >= 7 && CurrentHour <= 8)
-    {
-      if (pyroelectric_val == 1)
-      {
-        if (Isused == 0)
-        {
-          Isused = 1;
-          mylcd.setCursor(0,1);
-          mylcd.print("Buenos dias");
-          tone(buzzer_pin,294,250,0);
-          delay(500);
-          noTone(buzzer_pin,0);
-          delay(7000);
-          mylcd.clear();
-        }
-        else
-        {
-          mylcd.setCursor(0,1);
-          mylcd.print("Temperatura = ");
-          mylcd.print(dht[2]);
-          delay(55);
-          if (Isused1 == 0)
-          {
-            Isused1 = 1;
-            strip.setPixelColor(0, strip.Color(255, 0, 0)); // Red
-            strip.setPixelColor(1, strip.Color(0, 255, 0)); // Green
-            strip.setPixelColor(2, strip.Color(0, 0, 255)); // Blue
-            strip.setPixelColor(3, strip.Color(255, 255, 255)); // White
-            strip.show(); // This sends the updated pixel color to the hardware.
-            delay(5000);
-            strip.clear();
-          }
-          else if (Isused1 == 1)
-          {
-            /* code */
-          }
-          
-        }
+    // Efectos según la hora del día
+    if (pyroelectric_val == 1) {
+      if (CurrentHour >= 7 && CurrentHour <= 9) {
+        efectoBienvenida();
+        rainbowEffect();
+      } else if (CurrentHour >= 20 && CurrentHour <= 23) {
+        breathingEffect();
+      } else {
+        strip.fill(strip.Color(0, 255, 0));
+        strip.show();
       }
-      else
-      {
-        mylcd.print("No detectado");
-      }
-      
-    }
-    else if (CurrentHour >= 9 && CurrentHour <= 20)
-    {
-      if (pyroelectric_val == 1)
-      {
-        mylcd.setCursor(0,1); 
-        mylcd.print("Buen dia!");
-
-      }
-      else if (pyroelectric_val == 0)
-      {
-        mylcd.print("No detectado");
-        if (Isused2 == 0)
-        {
-          Isused2 = 1;
-          digitalWrite(led_y, HIGH);  //Light up the LED
-          delay(10000);     //Delay statement, in ms
-          digitalWrite(led_y, LOW);   //Close the LED
-        }
-
-      }
-      
-    }
-    else if (CurrentHour >= 21 && CurrentHour <= 23)
-    {
-      Isused = 0;
-      Isused1 = 0;
-      Isused2 = 0;
-      if (pyroelectric_val == 1)
-      {
-        mylcd.setCursor(0,1);
-        mylcd.print("Hora de dormir");
-      }
-      else if (pyroelectric_val == 0)
-      {
-        mylcd.setCursor(0,1);
-        mylcd.print("No detectado");
-      }
-      
-      
+    } else {
+      strip.clear();
+      strip.show();
     }
   }
   else{
     BeginSleep();
   }
-  
 }
 
 
