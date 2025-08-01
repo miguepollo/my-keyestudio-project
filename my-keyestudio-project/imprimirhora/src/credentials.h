@@ -7,8 +7,8 @@ long Delta           = 30;
 int     wifi_signal, CurrentHour = 0;
 int     wifi_signal_min, CurrentMin = 0;
 int     wifi_signal_sec, CurrentSec = 0;
-const char* ssid = "Your ºSSIDº"; // Replace with your WiFi SSID
-const char* password = "Your ºPasswordº"; // Replace with your WiFi Password
+const char* ssid = "your_wifi_ssid"; // Replace with your WiFi SSID
+const char* password = "your_wifi_password"; // Replace with your WiFi password
 
 const char* Timezone    = "CET-1CEST,M3.5.0,M10.5.0/3"; // Choose your time zone from: https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv 
                                                            // See below for examples
@@ -27,6 +27,8 @@ int servoPin = 13; // GPIO pin for servo signal
 int8_t Isused = 0;
 int8_t Isused1 = 0;
 int8_t Isused2 = 0;
+bool servousado = 0;
+#include <WiFi.h>
 #define led_y 12  //Define the yellow led pin to 12
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
