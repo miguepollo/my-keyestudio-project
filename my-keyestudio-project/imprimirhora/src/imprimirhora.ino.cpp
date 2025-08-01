@@ -187,14 +187,22 @@ void desplazarTexto(const char* texto, int fila) {
     mylcd.print(texto);
   } else {
     // Si el texto es largo, lo hacemos desplazar
-    for (int pos = 0; pos < longitud; pos++) {
+    // Primero mostramos el texto completo desplazándose
+    for (int pos = 0; pos <= longitud - 16; pos++) {
+      mylcd.setCursor(0, fila);
+      mylcd.print("                "); // Limpiar la línea
       mylcd.setCursor(0, fila);
       for (int i = 0; i < 16; i++) {
-        int indice = (pos + i) % longitud;
-        mylcd.print(texto[indice]);
+        if (pos + i < longitud) {
+          mylcd.print(texto[pos + i]);
+        }
       }
-      delay(300); // Velocidad del desplazamiento
+      delay(350); // Velocidad del desplazamiento
     }
+    // Luego volvemos al inicio
+    delay(500); // Pausa al final
+    mylcd.setCursor(0, fila);
+    mylcd.print(texto);
   }
 }
 
@@ -234,21 +242,15 @@ bool getWeatherData() {
     String weather = doc["weather"][0]["description"];
     float humidity = doc["main"]["humidity"];
     
-    // Limpiar la línea antes de escribir
-    mylcd.setCursor(0,1);
-    mylcd.print("                "); // 16 espacios para limpiar
+    // Crear mensaje completo del clima
+    char weatherMessage[50];
+    snprintf(weatherMessage, sizeof(weatherMessage), "%.1fC %s HR:%.0f%%", 
+             temperature, weather.c_str(), humidity);
     
-    // Crear mensaje más compacto
-    String weatherMessage = String(temperature, 1) + "C " + weather.substring(0, 6);
-    if (weatherMessage.length() > 16) {
-      weatherMessage = weatherMessage.substring(0, 16);
-    }
+    Serial.println("Mensaje del tiempo: " + String(weatherMessage));
     
-    Serial.println("Mensaje del tiempo: " + weatherMessage);
-    
-    // Mostrar en la segunda línea
-    mylcd.setCursor(0,1);
-    mylcd.print(weatherMessage);
+    // Usar la función de desplazamiento para mostrar el mensaje completo
+    desplazarTexto(weatherMessage, 1);
     return true;
   } else {
     Serial.println("Error en la conexión HTTP: " + String(httpCode));
@@ -343,7 +345,18 @@ void rainbowEffect() {
     delay(20);
   }
 }
-
+void otroefectodeluces() {
+  // Aquí puedes agregar otro efecto de luces si lo deseas
+  // Por ejemplo, un efecto de parpadeo
+  for(int i = 0; i < 5; i++) {
+    strip.fill(strip.Color(random(0, 255), random(0, 255), random(0, 255))); // Color cambiante
+    strip.show();
+    delay(200);
+    strip.clear();
+    strip.show();
+    delay(200);
+  }
+}
 void loop() {
   boolean  pyroelectric_val = digitalRead(pyroelectric);
   SetupTime();
@@ -352,7 +365,7 @@ void loop() {
 
   if(CurrentHour >= 7 && CurrentHour <= 23){
     delay(1000);
-    mylcd.setCursor(6,0);
+    mylcd.setCursor(0,0);
     if(CurrentHour < 10) {
       mylcd.print("0");
     }
@@ -385,14 +398,69 @@ void loop() {
         lastWeatherUpdate = millis();
       }
     }
-
+    //Añadir mesajes para cada hora del dia     
     // Efectos según la hora del día
     if (pyroelectric_val == 1) {
       if (CurrentHour >= 7 && CurrentHour <= 9) {
-        efectoBienvenida();
+        mylcd.clear();
+        if (servousado == 0) {
+          efectoBienvenida();
+          servousado = 1; // Marcar que el efecto de bienvenida ya se ha usado
+        }
         rainbowEffect();
-      } else if (CurrentHour >= 20 && CurrentHour <= 23) {
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000); // Mostrar el clima por 3 segundos
+        }
+        mylcd.setCursor(0,1);
+        mylcd.print("¡Empieza el dia!");
+      } else if (CurrentHour >= 10 && CurrentHour <= 12) {
+        mylcd.clear();
+        efectoFiesta();
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        servousado = 0; // Reiniciar el uso del efecto de bienvenida
+        mylcd.print("¡A por todas!");
+      } else if (CurrentHour >= 13 && CurrentHour <= 14) {
+        mylcd.clear();
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        mylcd.print("¡Rico almuerzo!");
+      } else if (CurrentHour >= 15 && CurrentHour <= 17) {
+        mylcd.clear();
+        mylcd.setCursor(0,1);
+        void otroefectodeluces();
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        mylcd.print("Momento relax...");
+      } else if (CurrentHour >= 18 && CurrentHour <= 19) {
+        mylcd.clear();
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        mylcd.print("¡A refrescarse!");
+      } else if (CurrentHour >= 20 && CurrentHour <= 21) {
         breathingEffect();
+        mylcd.clear();
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        mylcd.print("¡Rico y casero!");
+      } else if (CurrentHour >= 22 && CurrentHour <= 23) {
+        mylcd.clear();
+        mylcd.setCursor(0,1);
+        if (getWeatherData()) {
+          delay(3000);
+        }
+        mylcd.print("¡Dulces sueños!");
+        efectoAlarma(); 
       } else {
         strip.fill(strip.Color(0, 255, 0));
         strip.show();
